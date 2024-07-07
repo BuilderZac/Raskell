@@ -1,20 +1,26 @@
 --Usable functions are keyGen, keyWrite, keyTool, keyRead, encrypt, and decrypt
 
+-- ras is used to export the lua functions
 local ras = {}
+-- loopCap sets the max number the wild card will be before looping
 local loopCap = 255
 
+-- function for replacing one char
 local function replaceChar(pos, str, r)
     return str:sub(1, pos-1) .. r .. str:sub(pos+1)
 end
 
+-- function for moving a char from front to the end
 local function moveToEnd(str)
    return str:sub(2) .. str:sub(1,1)
 end
 
+-- same thing as above just reverse
 local function moveToFront(str)
    return str:sub(8, 8) .. str:sub(1, 7)
 end
 
+-- for converting a string in ascii to a string of binary
 local function stringBinary(input)
    local num1 = input
    if num1 == nil then
@@ -32,10 +38,12 @@ local function stringBinary(input)
    return string
 end
 
+-- this function was used for easier formating on my part
 local function ezbyte(input)
    return stringBinary(string.byte(input))
 end
 
+-- a function for doing the XOR operations
 local function bitFlip(byte1, byte2)
    local tembyte2 = byte2
    for i = 0, 8, 1 do
@@ -50,6 +58,7 @@ local function bitFlip(byte1, byte2)
    return tembyte2
 end
 
+-- a fucntion for converting strings of binary to ints
 local function binaryInt(byte)
    local total = 0
    local num1 = 256
@@ -62,6 +71,7 @@ local function binaryInt(byte)
    return total
 end
 
+-- a fucntion for converting strings of binary to hex
 local function binaryHex(byte)
    local tem = string.format("%x", binaryInt(byte))
    if string.len(tem) < 2 then
@@ -70,14 +80,17 @@ local function binaryHex(byte)
    return tem
 end
 
+-- a function for converting strings of hex to strings of binary
 local function hexBinary(hex)
    return stringBinary(tonumber(hex, 16))
 end
 
+-- a fucntion for converting strings of binary to strings of ascii
 local function binaryString(byte)
    return string.char(binaryInt(byte))
 end
 
+-- a function for generating keys with a wildcard in them
 function ras.keyGen(length, seed)
    math.randomseed(seed)
    local keyString = ""
@@ -94,6 +107,7 @@ function ras.keyGen(length, seed)
    return keyString
 end
 
+-- a function for writeing keys to a file
 function ras.keyWrite(key, keyName)
    local file = io.open(keyName, "w")
    io.output(file)
@@ -101,6 +115,7 @@ function ras.keyWrite(key, keyName)
    io.close(file)
 end
 
+-- a function for reading keys from a file
 function ras.keyRead(keyName)
    local file = io.open(keyName, "r")
    io.input(file)
@@ -109,11 +124,15 @@ function ras.keyRead(keyName)
    return key
 end
 
+-- the main encryption function
 function ras.encrypt(key, text)
+   -- sets up the variables used
    local output = ""
    local tem = ""
    local temKey = ""
    local keyTick = 1
+
+   -- this converts the key which is saved in hex to a long string of binary
    for i = 1, string.len(key), 2 do
       if key:sub(i, i + 1) == "kk" then
          temKey = temKey .. "kkkkkkkk" else
@@ -121,9 +140,14 @@ function ras.encrypt(key, text)
       end
    end
 
+   -- this loop takes each letter and turns them into a byte
    for i = 1, string.len(text), 1 do
       tem = ezbyte(text:sub(i,i))
+
+      -- this loop runs each letter through the key
       for x = 1, (string.len(temKey)), 8 do
+
+         -- this if statment handles the wildcard
          if temKey:sub(x, x + 7) == "kkkkkkkk" then
             tem = bitFlip(tem, ezbyte(keyTick))
             if keyTick >= loopCap then
@@ -131,15 +155,21 @@ function ras.encrypt(key, text)
             end
             keyTick = keyTick + 1
          else
+            -- if it does not trigger the wildcard the XOR is done normally
             tem = bitFlip(tem, temKey:sub(x, x + 7))
          end
+
+         -- triggers the move to end operation after the XOR is done
          tem = moveToEnd(tem)
       end
+
+      -- appends the newly scrabled string of binary representing one ascii letter and saves them as a hex value
       output = output .. binaryHex(tem)
    end
    return output
 end
 
+-- it does the same thing as the encryption fucntion just in reverse
 function ras.decrypt(key, text)
    local output = ""
    local tem = ""
@@ -171,6 +201,8 @@ function ras.decrypt(key, text)
    return output
 end
 
+-- a tool for managing and making keys easily
+-- note this tool makes its keys based on time
 function ras.keyTool()
    io.write("-------Raskell Key gen tool-------\n")
    io.write("Engter the key length: ")
