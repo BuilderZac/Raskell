@@ -6,8 +6,7 @@ The basic idea is to do multiple XOR operations and each one shift the bytes ove
 1st key byte:&emsp;&emsp;&ensp;00110011\
 The letter A:&ensp;&emsp;&emsp;01000001\
 XOR operation:&emsp;01110010\
-Shift layer:&emsp;&emsp;&emsp;11100100
-
+Shift layer:&emsp;&emsp;&emsp;11100100\
 2nd key byte:&emsp;&emsp;10101010\
 XOR operation:&emsp;01001110\
 Shift Layer:&emsp;&emsp;&emsp;10011100
