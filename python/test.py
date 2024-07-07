@@ -1,2 +1,2 @@
 import Raskell as r
-print(r.keyGen(32,5238468))
+print(r.keyGen(5, 523468))

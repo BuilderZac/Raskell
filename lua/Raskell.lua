@@ -179,9 +179,4 @@ function ras.keyTool()
    keyWrite(keyGen(keyLength, os.time()), io.read())
 end
 
-function ras.totpEpoch()
-   local time = math.floor(os.time() / 2)
-   return tostring(time):sub(1, -2)
-end
-
 return ras
