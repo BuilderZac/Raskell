@@ -149,7 +149,7 @@ function ras.encrypt(key, text)
 
          -- this if statment handles the wildcard
          if temKey:sub(x, x + 7) == "kkkkkkkk" then
-            tem = bitFlip(tem, ezbyte(keyTick))
+            tem = bitFlip(tem, stringBinary(keyTick))
             if keyTick >= loopCap then
                keyTick = 0
             end
@@ -187,7 +187,7 @@ function ras.decrypt(key, text)
       for x = (string.len(temKey)), 1, -8 do
          tem = moveToFront(tem)
          if temKey:sub(x - 7, x) == "kkkkkkkk" then
-            tem = bitFlip(tem, ezbyte(keyTick))
+            tem = bitFlip(tem, stringBinary(keyTick))
             if keyTick <= 1 then
                keyTick = loopCap + 1
             end
